@@ -1,0 +1,52 @@
+# HW Collection Manager
+
+## Versión
+
+1.0
+
+---
+
+# Descripción
+
+HW Collection Manager es una aplicación web Full Stack diseñada para ayudar a los coleccionistas de Hot Wheels a organizar y administrar su colección de vehículos a escala.
+
+El sistema permitirá registrar modelos, administrar compras, consultar estadísticas y acceder a la colección desde cualquier dispositivo mediante una interfaz moderna y completamente responsive.
+
+---
+
+# Objetivo
+
+Construir una plataforma escalable basada en React, Spring Boot y PostgreSQL que permita gestionar colecciones personales de manera eficiente, segura y sencilla.
+
+---
+
+# Público objetivo
+
+Coleccionistas de Hot Wheels.
+
+Coleccionistas de Matchbox.
+
+Coleccionistas de MiniGT.
+
+Coleccionistas de Auto World.
+
+Coleccionistas de cualquier vehículo a escala.
+
+---
+
+# Tecnologías
+
+Frontend
+
+- React
+- TypeScript
+- Tailwind CSS
+
+Backend
+
+- Java
+- Spring Boot
+
+Base de datos
+
+- PostgreSQL
