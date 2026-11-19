@@ -15,6 +15,11 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidCredentials(InvalidCredentialsException e) {
+        return build(HttpStatus.UNAUTHORIZED, e.getMessage());
+    }
+
     public record ErrorResponse(int status, String message, Instant timestamp) {
     }
 

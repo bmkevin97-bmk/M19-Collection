@@ -1,8 +1,9 @@
 package com.m19collection.api.controller;
 
-import com.m19collection.api.entity.Variante;
-import com.m19collection.api.repository.VarianteRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.m19collection.api.dto.VarianteRequest;
+import com.m19collection.api.dto.VarianteResponse;
+import com.m19collection.api.service.VarianteService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,61 +13,37 @@ import java.util.List;
 @RequestMapping("/api/variantes")
 public class VarianteController {
 
-    @Autowired
-    private VarianteRepository varianteRepository;
+    private final VarianteService varianteService;
+
+    public VarianteController(VarianteService varianteService) {
+        this.varianteService = varianteService;
+    }
 
     @GetMapping
-    public List<Variante> obtenerTodas() {
-        return varianteRepository.findAll();
+    public List<VarianteResponse> obtenerTodas() {
+        return varianteService.findAll().stream().map(VarianteResponse::from).toList();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Variante> obtenerPorId(@PathVariable Long id) {
-
-        return varianteRepository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public VarianteResponse obtenerPorId(@PathVariable Long id) {
+        return VarianteResponse.from(varianteService.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<Variante> crear(@RequestBody Variante variante) {
-
-        Variante nuevaVariante = varianteRepository.save(variante);
-
-        return ResponseEntity.status(201).body(nuevaVariante);
+    public ResponseEntity<VarianteResponse> crear(@Valid @RequestBody VarianteRequest request) {
+        return ResponseEntity.status(201)
+                .body(VarianteResponse.from(varianteService.create(request)));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Variante> actualizar(
-            @PathVariable Long id,
-            @RequestBody Variante variante) {
-
-        return varianteRepository.findById(id)
-                .map(varianteExistente -> {
-
-                    varianteExistente.setColor(variante.getColor());
-                    varianteExistente.setEdicion(variante.getEdicion());
-                    varianteExistente.setDescripcion(variante.getDescripcion());
-                    varianteExistente.setImagen(variante.getImagen());
-                    varianteExistente.setModelo(variante.getModelo());
-
-                    Variante actualizada = varianteRepository.save(varianteExistente);
-
-                    return ResponseEntity.ok(actualizada);
-                })
-                .orElse(ResponseEntity.notFound().build());
+    public VarianteResponse actualizar(@PathVariable Long id,
+                                       @Valid @RequestBody VarianteRequest request) {
+        return VarianteResponse.from(varianteService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
-
-        if (!varianteRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-
-        varianteRepository.deleteById(id);
-
+        varianteService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }
-
