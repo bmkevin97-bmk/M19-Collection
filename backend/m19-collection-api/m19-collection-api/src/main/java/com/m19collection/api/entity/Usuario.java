@@ -21,6 +21,10 @@ public class Usuario {
     @Column(nullable = false)
     private String password;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "varchar(20) default 'USER'")
+    private Role role = Role.USER;
+
     public Usuario() {
     }
 
@@ -56,5 +60,13 @@ public class Usuario {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 }

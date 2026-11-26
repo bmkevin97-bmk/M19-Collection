@@ -30,6 +30,6 @@ public class AuthService {
             throw new InvalidCredentialsException("Invalid email or password");
         }
 
-        return tokenIssuer.issue(usuario.getId(), usuario.getEmail());
+        return tokenIssuer.issue(usuario.getId(), usuario.getEmail(), usuario.getRole().name());
     }
 }

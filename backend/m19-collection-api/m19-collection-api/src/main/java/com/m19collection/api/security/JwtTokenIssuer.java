@@ -24,7 +24,7 @@ public class JwtTokenIssuer implements TokenIssuer {
     }
 
     @Override
-    public IssuedToken issue(Long userId, String email) {
+    public IssuedToken issue(Long userId, String email, String role) {
         Instant now = Instant.now();
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
@@ -33,6 +33,7 @@ public class JwtTokenIssuer implements TokenIssuer {
                 .expiresAt(now.plusSeconds(expirationSeconds))
                 .subject(String.valueOf(userId))
                 .claim("email", email)
+                .claim("role", role)
                 .build();
 
         JwsHeader header = JwsHeader.with(MacAlgorithm.HS256).build();

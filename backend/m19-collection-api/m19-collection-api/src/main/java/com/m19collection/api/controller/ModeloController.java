@@ -1,11 +1,11 @@
 package com.m19collection.api.controller;
 
 import com.m19collection.api.dto.AssignSeriesRequest;
-import com.m19collection.api.entity.Modelo;
+import com.m19collection.api.dto.ModeloRequest;
+import com.m19collection.api.dto.ModeloResponse;
 import com.m19collection.api.entity.Serie;
-import com.m19collection.api.repository.ModeloRepository;
 import com.m19collection.api.service.ModeloService;
-import org.springframework.http.HttpStatus;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,50 +15,37 @@ import java.util.List;
 @RequestMapping("/api/modelos")
 public class ModeloController {
 
-    private final ModeloRepository modeloRepository;
     private final ModeloService modeloService;
 
-    public ModeloController(ModeloRepository modeloRepository, ModeloService modeloService) {
-        this.modeloRepository = modeloRepository;
+    public ModeloController(ModeloService modeloService) {
         this.modeloService = modeloService;
     }
 
     @GetMapping
-    public List<Modelo> getAll() {
-        return modeloRepository.findAll();
+    public List<ModeloResponse> getAll() {
+        return modeloService.findAll().stream().map(ModeloResponse::from).toList();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Modelo> getById(@PathVariable Long id) {
-        return modeloRepository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ModeloResponse getById(@PathVariable Long id) {
+        return ModeloResponse.from(modeloService.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<Modelo> create(@RequestBody Modelo modelo) {
-        Modelo nuevoModelo = modeloRepository.save(modelo);
-        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoModelo);
+    public ResponseEntity<ModeloResponse> create(@Valid @RequestBody ModeloRequest request) {
+        return ResponseEntity.status(201)
+                .body(ModeloResponse.from(modeloService.create(request)));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Modelo> update(@PathVariable Long id, @RequestBody Modelo data) {
-        return modeloRepository.findById(id)
-                .map(m -> {
-                    m.setNombre(data.getNombre());
-                    m.setAnio(data.getAnio());
-                    m.setDescripcion(data.getDescripcion());
-                    return ResponseEntity.ok(modeloRepository.save(m));
-                })
-                .orElse(ResponseEntity.notFound().build());
+    public ModeloResponse update(@PathVariable Long id,
+                                 @Valid @RequestBody ModeloRequest request) {
+        return ModeloResponse.from(modeloService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        if (!modeloRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        modeloRepository.deleteById(id);
+        modeloService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
@@ -69,7 +56,7 @@ public class ModeloController {
 
     @PutMapping("/{id}/series")
     public List<Serie> assignSeries(@PathVariable Long id,
-                                     @RequestBody AssignSeriesRequest request) {
+                                    @RequestBody AssignSeriesRequest request) {
         return modeloService.asignarSeries(id, request.serieIds());
     }
 }
